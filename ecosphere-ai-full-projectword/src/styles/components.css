@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Main card for each section of the report */
+  .section-card {
+    @apply p-3;
+  }
+
+  /* Base style for form inputs */
+  .form-input-styled {
+    @apply w-full bg-gray-50 rounded-l px-2 py-2 text-lg border-gray-300 focus:border-indigo-500 focus:ring-2;
+  }
+
+  /* Base style for form select dropdowns */
+  .form-select-styled {
+    @apply w-full bg-gray-50 rounded-xl px-2 py-2 text-lg border-gray-300 focus:border-indigo-500 focus:ring-2;
+  }
+
+  /* Standard style for form labels */
+  .form-label-styled {
+    @apply block text-lg font-medium text-gray-800 mb-1;
+  }
+
+  /* Base for gradient section titles (gradient is applied via inline style) */
+  .section-title-gradient {
+    @apply text-2xl  mb-6 px-4 py-2 rounded text-white border-b-2 border-black;
+  }
+
+  /* Small cards for displaying individual stats (e.g., scopes) */
+  .summary-stat-card {
+    @apply p-2 rounded-xl shadow text-center;
+  }
+
+  /* Wrapper card for charts */
+  .chart-container-card {
+    @apply bg-white rounded-xl shadow-md p-6 border;
+  }
+  
+  /* Card for displaying narrative/summary text with a side accent */
+  .narrative-card {
+    @apply p-5 rounded-lg shadow-sm border-l-4;
+  } 
+} 
