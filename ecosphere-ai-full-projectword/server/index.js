@@ -15,7 +15,7 @@ app.set('trust proxy', 1); // 🧩 IMPORTANT
 
 // ✅ Middleware
 app.use(cors({
-  origin: 'https://carbon-reduction-plan-ecosphere.vercel.app',
+  origin: ['http://localhost:5173', 'https://carbon-reduction-plan-ecosphere.vercel.app'],
   credentials: true,
 }));
 
@@ -36,8 +36,8 @@ app.use(
     cookie: {
       maxAge: 2 * 60 * 60 * 1000, // 2 hours
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: 'lax',
+      secure: false, // Set to false for local development
     },
   })
 );

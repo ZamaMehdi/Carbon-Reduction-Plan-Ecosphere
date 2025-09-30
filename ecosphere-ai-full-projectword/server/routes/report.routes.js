@@ -5,7 +5,7 @@ const Report = require('../models/report.model');
 const User = require('../models/user.model');
 const requireAuth = require('../middleware/requireAuth');  // ✅ Protects routes for logged-in users only
 const { generateReportDocx, generateCompleteReportDocx } = require('../utils/generateReportDocx');
-const { sendReportEmail, sendReportEmailWithBuffer } = require('../utils/email');
+// Email functionality removed
 
 
 
@@ -129,17 +129,18 @@ router.get('/my-report', requireAuth, async (req, res) => {
 // });
 
 
- router.post('/', requireAuth, async (req, res) => {
-  if (!req.user) {
-    console.warn('⚠️ req.user is missing in /reports POST route');
-    return res.status(401).json({ message: 'Unauthenticated' });
-  }
-  const user = req.user;
+ router.post('/', async (req, res) => {
   try {
-    console.log('🧑‍💼 Report submitted by user:', user?.email);
- 
-    if (!user) return res.status(401).json({ message: 'Unauthenticated' });
-        console.log('📦 Incoming report data:', JSON.stringify(req.body, null, 2));
+    console.log('📦 Incoming report data:', JSON.stringify(req.body, null, 2));
+    
+    // Validate required fields
+    if (!req.body.userEmail) {
+      return res.status(400).json({ message: 'Email address is required' });
+    }
+    
+    if (!req.body.organisationName) {
+      return res.status(400).json({ message: 'Organisation name is required' });
+    }
 
     // 🔢 Calculate emission metrics
     const baseline = req.body.previousPeriods?.[0];
@@ -191,17 +192,13 @@ router.get('/my-report', requireAuth, async (req, res) => {
     // 🆕 Always create a new report
     const newReport = await Report.create({
       ...req.body,
-      userId: user._id,
+      userEmail: req.body.userEmail,
       locked: true,
       submitted: true,
       accessCode: Math.random().toString().slice(2, 10),
     });
 
-    // 🔗 Optionally link user to most recent report
-    user.report = newReport._id;
-    await user.save();
-
-    // 📄 Generate Word doc and send email using the same function as admin download
+    // 📄 Generate Word doc (email sending removed)
     const docBuffer = await generateCompleteReportDocx({
       ...req.body,
       projected2030Emissions,
@@ -209,12 +206,8 @@ router.get('/my-report', requireAuth, async (req, res) => {
       reduction2030,
       reductionNetZero
     });
-    await sendReportEmailWithBuffer(process.env.ADMIN_EMAIL, docBuffer, req.body.organisationName);
     
-    // const filePath = await generateReportDocx(data);
-    // console.log('✅ DOCX generated at:', filePath);
-    // await sendReportEmail(process.env.ADMIN_EMAIL, filePath);
-    // console.log('📧 Email sent to:', process.env.ADMIN_EMAIL);
+    console.log('✅ Report saved to database and Word document generated');
 
     return res.status(201).json({
       message: 'Report submitted successfully',
