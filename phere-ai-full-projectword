@@ -1,0 +1,28 @@
+[33mcommit a1aaecddbd77a717679c9523040ef9eaac3938b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Zama Mehdi <zamamehdi9@gmail.com>
+Date:   Wed Oct 1 12:30:44 2025 +0530
+
+    Fix MongoDB connection, remove email functionality, update banner to carbon reduction planning image, and fix CSS issues
+
+ ecosphere-ai-full-projectword/server/index.js      |   4 [32m+[m[31m-[m
+ .../server/middleware/requireAuth.js               | 127 [32m+++++++++++[m
+ .../server/routes/admin.routes.js                  |   4 [32m+[m[31m-[m
+ .../server/routes/auth.routes.js                   | 157 [32m+++++++++++++[m
+ .../server/routes/report.routes.js                 | 104 [32m++++++++[m[31m-[m
+ ecosphere-ai-full-projectword/src/App.jsx          |  81 [32m++[m[31m-----[m
+ .../src/components/AuthPage.jsx                    |  26 [32m+++[m
+ .../src/components/Charts/ScopePieChart.jsx        | 140 [32m+++++++++[m[31m---[m
+ .../src/components/Charts/YearComparisonChart.jsx  | 113 [32m++++++++[m[31m--[m
+ .../src/components/ChartsSidebar.jsx               | 129 [31m-----------[m
+ .../src/components/EmissionsForm.jsx               |  92 [32m++++[m[31m----[m
+ .../src/components/EmissionsSummary.jsx            |  12 [32m+[m
+ .../src/components/Header.jsx                      |  35 [32m+[m[31m--[m
+ .../src/components/LoginPage.jsx                   | 250 [32m+++++++++++++++++++++[m
+ .../src/components/OrganisationDetails.jsx         | 101 [32m++++[m[31m-----[m
+ .../src/components/ReductionPlan.jsx               |  54 [32m++[m[31m---[m
+ .../src/components/ReportDetails.jsx               |  63 [32m+++[m[31m---[m
+ .../src/components/RequireAdmin.jsx                |  13 [32m++[m
+ .../src/components/SignupPage.jsx                  | 166 [32m++++++++++++++[m
+ .../src/styles/components.css                      | 132 [31m-----------[m
+ ecosphere-ai-full-projectword/vercel.json          |  23 [31m--[m
+ 21 files changed, 1215 insertions(+), 611 deletions(-)
