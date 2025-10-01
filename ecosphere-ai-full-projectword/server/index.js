@@ -15,7 +15,11 @@ app.set('trust proxy', 1); // 🧩 IMPORTANT
 
 // ✅ Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://carbon-reduction-plan-ecosphere.vercel.app'],
+  origin: [
+    'http://localhost:5173', 
+    'https://carbon-reduction-plan-ecosphere.vercel.app',
+    'https://carbon-reduction-plan-ecosphere-gz696flua-zamamehdis-projects.vercel.app'
+  ],
   credentials: true,
 }));
 
