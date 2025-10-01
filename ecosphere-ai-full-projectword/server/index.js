@@ -28,15 +28,45 @@ function isOriginAllowed(origin) {
   return allowedOrigins.includes(origin);
 }
 
+// ✅ CORS Middleware with explicit headers
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log('🔍 Request origin:', origin);
+  console.log('🔍 Request method:', req.method);
+  console.log('🔍 Request URL:', req.url);
+  
+  // Set CORS headers explicitly
+  if (isOriginAllowed(origin)) {
+    console.log('✅ Setting CORS headers for origin:', origin);
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
+    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+  } else {
+    console.log('❌ Blocking origin:', origin);
+  }
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    console.log('🔄 Handling preflight request');
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
+
+// ✅ Additional CORS middleware as backup
 app.use(cors({
   origin: function (origin, callback) {
-    console.log('🔍 CORS Origin check:', origin);
+    console.log('🔍 CORS Origin check (backup):', origin);
     
     if (isOriginAllowed(origin)) {
-      console.log('✅ Allowing origin:', origin);
+      console.log('✅ Allowing origin (backup):', origin);
       callback(null, true);
     } else {
-      console.log('❌ Blocking origin:', origin);
+      console.log('❌ Blocking origin (backup):', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
