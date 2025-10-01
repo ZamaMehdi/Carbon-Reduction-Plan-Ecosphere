@@ -64,8 +64,8 @@ app.use(session({
   cookie: {
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: "none",   // 👈 needed for cross-domain
-    secure: true,       // 👈 must be true on HTTPS
+    sameSite: "lax",    // 👈 works for local development
+    secure: false,      // 👈 false for local HTTP development
   },
 }));
 
@@ -114,8 +114,8 @@ app.get('/test-set-cookie', (req, res) => {
   res.cookie('debugCookie', 'cookie123', {
     maxAge: 60 * 1000, // 1 minute
     httpOnly: true,
-    sameSite: "none",
-    secure: true
+    sameSite: "lax",    // 👈 match session settings
+    secure: false       // 👈 match session settings
   });
   res.json({ 
     message: 'Test cookie set', 
@@ -133,15 +133,7 @@ app.get('/test-server', (req, res) => {
   });
 });
 
-// ✅ Direct auth/me test route
-app.get('/auth/me', (req, res) => {
-  console.log('🧪 DIRECT /auth/me route hit');
-  res.json({ 
-    message: 'Direct auth/me route working!', 
-    session: req.session,
-    timestamp: new Date().toISOString()
-  });
-});
+// ✅ Direct auth/me test route - REMOVED (was overriding actual auth route)
 
 // ✅ Routes
 app.use('/auth', authRoutes);

@@ -123,11 +123,22 @@ function App() {
   }, [formData, userInfo, isFormLocked]);
 
   useEffect(() => {
-    if (!userInfo) return;
+    console.log('🔍 Checking existing report - userInfo:', userInfo);
+    console.log('🔍 userInfo type:', typeof userInfo);
+    console.log('🔍 userInfo === null:', userInfo === null);
+    console.log('🔍 !userInfo:', !userInfo);
+    
+    // Only run if userInfo is truthy and has the expected structure
+    if (!userInfo || userInfo === null || !userInfo.id || !userInfo.email) {
+      console.log('❌ No valid userInfo, skipping report check');
+      return;
+    }
 
+    console.log('✅ Valid userInfo exists, checking for existing report...');
     api
       .get('/reports/my-report')
       .then((res) => {
+        console.log('✅ Found existing report:', res.data);
         if (res.data.locked) {
           setIsFormLocked(true);
           setFormData(res.data);
@@ -228,6 +239,15 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    // Check if user is logged in
+    if (!userInfo || !userInfo.email) {
+      setSubmissionStatus({
+        message: 'Please log in to submit your report.',
+        type: 'error',
+      });
+      return;
+    }
+  
     const requiredFields = [
       { key: 'organisationName', label: 'Organisation Name' },
       { key: 'companyNumber', label: 'Company Number' },
@@ -254,6 +274,7 @@ function App() {
       const payload = {
         ...formData,
         scopePieChart: scopeChartImage,
+        userEmail: userInfo?.email, // Add user email from session
       };
   
       await api.post('/reports', payload);
