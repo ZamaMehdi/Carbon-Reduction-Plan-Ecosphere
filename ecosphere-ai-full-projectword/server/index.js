@@ -24,19 +24,7 @@ const allowedOrigins = [
 ];
 
 app.use(
-  cors({
-    origin: function (origin, callback) {
-      console.log('🚀 CORS - Origin:', origin);
-      if (!origin) return callback(null, true); // allow REST tools / server-to-server
-      if (allowedOrigins.includes(origin)) {
-        console.log('✅ CORS - Origin allowed:', origin);
-        return callback(null, origin);
-      }
-      console.log('❌ CORS - Origin not allowed:', origin);
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-  })
+  cors()
 );
 
 app.use(express.json({ limit: '50mb' }));
