@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-// const cors = require('cors'); // COMPLETELY DISABLED - using manual CORS
+const cors = require('cors');
 const dotenv = require('dotenv');
 
 console.log('🔍 Loading routes...');
@@ -17,50 +17,27 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// ✅ BULLETPROOF CORS - Allow specific origins
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  console.log('🚀 BULLETPROOF CORS - Origin:', origin);
-  console.log('🚀 BULLETPROOF CORS - Method:', req.method);
-  console.log('🚀 BULLETPROOF CORS - URL:', req.url);
-  
-  // List of allowed origins
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://carbonreductionplanning.netlify.app',
-    'https://carbon-reduction-plan-ecosphere.vercel.app',
-    'https://carbonreductionplanning.netlify.app/'
-  ];
-  
-  // Allow specific origins or any vercel.app/netlify.app domain
-  const isAllowedOrigin = origin && (
-    allowedOrigins.includes(origin) || 
-    origin.includes('vercel.app') || 
-    origin.includes('netlify.app')
-  );
-  
-  if (isAllowedOrigin) {
-    console.log('✅ Setting CORS headers for:', origin);
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
-    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
-  } else {
-    console.log('❌ Origin not allowed:', origin);
-    // Don't set any CORS headers for disallowed origins
-  }
-  
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    console.log('🔄 PREFLIGHT handled');
-    res.status(200).end();
-    return;
-  }
-  
-  next();
-});
+// ✅ CORS Configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://carbonreductionplanning.netlify.app"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log('🚀 CORS - Origin:', origin);
+      if (!origin) return callback(null, true); // allow REST tools / server-to-server
+      if (allowedOrigins.includes(origin)) {
+        console.log('✅ CORS - Origin allowed:', origin);
+        return callback(null, origin);
+      }
+      console.log('❌ CORS - Origin not allowed:', origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
