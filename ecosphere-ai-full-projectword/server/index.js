@@ -13,33 +13,26 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// CORS setup
+// ✅ CLEAN CORS CONFIGURATION - No wildcards ever
 const allowedOrigins = [
+  "https://carbon-reduction-plan-ecosphere-dta2cnql3-zamamehdis-projects.vercel.app",
   "http://localhost:5173",
-  "http://localhost:3000",
-  "https://carbon-reduction-plan-ecosphere.vercel.app"
+  "http://localhost:3000"
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
+    console.log('🔍 CORS Origin check:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+      console.log('✅ Allowing origin:', origin);
+      callback(null, origin);
     } else {
+      console.log('❌ Blocking origin:', origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true,
+  credentials: true
 }));
-
-// ✅ DEBUG: Log CORS headers being sent
-app.use((req, res, next) => {
-  res.on('finish', () => {
-    console.log('🔍 CORS headers being sent:');
-    console.log('  Access-Control-Allow-Origin:', res.get('Access-Control-Allow-Origin'));
-    console.log('  Access-Control-Allow-Credentials:', res.get('Access-Control-Allow-Credentials'));
-  });
-  next();
-});
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -76,6 +69,14 @@ app.use(async (req, res, next) => {
 });
 
 // ✅ Test endpoints for debugging
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Server is running', 
+    timestamp: new Date().toISOString(),
+    origin: req.headers.origin
+  });
+});
+
 app.get('/test-cors', (req, res) => {
   console.log('🧪 TEST CORS endpoint hit');
   res.json({ 
@@ -87,11 +88,11 @@ app.get('/test-cors', (req, res) => {
 
 app.get('/test-set-cookie', (req, res) => {
   console.log('🧪 TEST SET COOKIE endpoint hit');
-  res.cookie('test-cookie', 'test-value', {
+  res.cookie('debugCookie', 'cookie123', {
     maxAge: 60 * 1000, // 1 minute
     httpOnly: true,
     sameSite: "none",
-    secure: true,
+    secure: true
   });
   res.json({ 
     message: 'Test cookie set', 

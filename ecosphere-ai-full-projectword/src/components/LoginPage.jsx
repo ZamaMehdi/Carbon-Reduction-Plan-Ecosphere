@@ -26,9 +26,9 @@ const LoginPage = ({ onLoginSuccess, onNavigateToSignup }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/auth/login', { email, password }, { withCredentials: true });
-  
-      const { data: me } = await api.get('/auth/me', { withCredentials: true });
+      await api.post('/auth/login', { email, password });
+
+      const { data: me } = await api.get('/auth/me');
       const user = {
         id: me.userId,
         email: me.email,
@@ -37,7 +37,7 @@ const LoginPage = ({ onLoginSuccess, onNavigateToSignup }) => {
       // ✅ Fetch latest report *before* navigating
       let latestReport = null;
       try {
-        const { data: reportData } = await api.get('/reports/latest-report', { withCredentials: true });
+        const { data: reportData } = await api.get('/reports/latest-report');
         latestReport = reportData;
       } catch (reportErr) {
         console.warn('No latest report found or failed to fetch it');

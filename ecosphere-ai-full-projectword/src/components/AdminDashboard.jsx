@@ -41,7 +41,6 @@ const AdminDashboard = () => {
   const fetchSubmittedReports = async (includeDeleted = false) => {
     try {
       const res = await api.get(`/admin/submitted-reports?includeDeleted=${includeDeleted}`, {
-        withCredentials: true,
       });
         console.log('📦 Submitted Reports:', res.data);
       const sortedReports = [...res.data].sort((a, b) => (a.organisationName || '').localeCompare(b.organisationName || ''));

@@ -87,16 +87,16 @@ function App() {
     }
    }, [userInfo, location]);
 
-   useEffect(() => {
+  useEffect(() => {
     api
-      .get('/auth/me', { withCredentials: true })
+      .get('/auth/me')
       .then((res) => {
         const { userId, email } = res.data;
         if (userId && email) {
           setUserInfo({ id: userId, email });
-  
+
           // ✅ Fetch latest report
-          api.get('/reports/latest-report', { withCredentials: true })
+          api.get('/reports/latest-report')
             .then((r) => {
               console.log('✅ Prefilling form with latest report:', r.data);
               setFormData(r.data); // 🟩 This will auto-fill the form fields

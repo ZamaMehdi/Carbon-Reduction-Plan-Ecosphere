@@ -5,7 +5,6 @@ const TestCookie = () => {
   const sendTest = async () => {
     try {
       const res = await api.get('http://localhost:5000/test-set-cookie', {
-        withCredentials: true,
       });
       alert('Test cookie sent!');
       console.log(res.data);

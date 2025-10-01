@@ -150,7 +150,6 @@ const ReportViewPage = ({ isAdminView = false }) => {
               try {
                 const response = await api.get(`/admin/download-report/${report._id}`, {
                   responseType: 'blob',
-                  withCredentials: true,
                 });
 
                 const url = window.URL.createObjectURL(
