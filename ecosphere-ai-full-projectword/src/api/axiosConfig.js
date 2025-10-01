@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://carbon-reduction-plan-ecosphere.onrender.com',
+  baseURL: import.meta.env.VITE_API_URL || 'https://carbon-emission-2.onrender.com',
   withCredentials: true,
 });
 
