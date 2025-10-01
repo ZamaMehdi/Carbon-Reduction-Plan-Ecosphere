@@ -16,21 +16,32 @@ app.set('trust proxy', 1); // 🧩 IMPORTANT
 // ✅ Middleware
 app.use(cors({
   origin: function (origin, callback) {
+    console.log('🔍 CORS Origin check:', origin);
+    
     // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
+    }
     
     // Allow localhost for development
-    if (origin.includes('localhost')) return callback(null, true);
+    if (origin.includes('localhost')) {
+      console.log('✅ Allowing localhost origin:', origin);
+      return callback(null, true);
+    }
     
     // Allow all Vercel domains
-    if (origin.includes('vercel.app')) return callback(null, true);
+    if (origin.includes('vercel.app')) {
+      console.log('✅ Allowing Vercel origin:', origin);
+      return callback(null, true);
+    }
     
-    // Allow the main production domain
-    if (origin === 'https://carbon-reduction-plan-ecosphere.vercel.app') return callback(null, true);
-    
+    console.log('❌ Blocking origin:', origin);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
 }));
 
 app.use(express.json({ limit: '50mb' }));
