@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const cors = require('cors');
+// const cors = require('cors'); // DISABLED - using custom CORS
 const dotenv = require('dotenv');
 
 const adminRoutes = require('./routes/admin.routes');
@@ -13,65 +13,43 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// ✅ COMPLETE CORS OVERRIDE - NO WILDCARDS ALLOWED
+// ✅ AGGRESSIVE CORS FIX - OVERRIDE EVERYTHING
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  console.log('🚨 CORS OVERRIDE - Request origin:', origin);
-  console.log('🚨 CORS OVERRIDE - Request method:', req.method);
-  console.log('🚨 CORS OVERRIDE - Request URL:', req.url);
+  console.log('🔥 AGGRESSIVE CORS - Origin:', origin);
+  console.log('🔥 AGGRESSIVE CORS - Method:', req.method);
+  console.log('🔥 AGGRESSIVE CORS - URL:', req.url);
   
-  // Define allowed origins explicitly
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://carbon-reduction-plan-ecosphere.vercel.app'
-  ];
-  
-  // Check if origin is allowed
-  let isAllowed = false;
-  if (!origin) {
-    isAllowed = true; // Allow requests with no origin
-    console.log('✅ Allowing request with no origin');
-  } else if (origin.includes('localhost')) {
-    isAllowed = true; // Allow localhost
-    console.log('✅ Allowing localhost origin:', origin);
-  } else if (origin.includes('vercel.app')) {
-    isAllowed = true; // Allow all Vercel domains
-    console.log('✅ Allowing Vercel origin:', origin);
-  } else if (allowedOrigins.includes(origin)) {
-    isAllowed = true; // Allow specific origins
-    console.log('✅ Allowing specific origin:', origin);
+  // ALWAYS set headers for allowed origins
+  if (!origin || origin.includes('localhost') || origin.includes('vercel.app')) {
+    console.log('🔥 SETTING CORS HEADERS - Origin allowed:', origin);
+    
+    // Clear any existing headers first
+    res.removeHeader('Access-Control-Allow-Origin');
+    res.removeHeader('Access-Control-Allow-Credentials');
+    res.removeHeader('Access-Control-Allow-Methods');
+    res.removeHeader('Access-Control-Allow-Headers');
+    
+    // Set new headers
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    res.setHeader('Access-Control-Allow-Credentials', 'false'); // Disable credentials
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    
+    console.log('🔥 CORS HEADERS SET:', {
+      'Access-Control-Allow-Origin': origin || '*',
+      'Access-Control-Allow-Credentials': 'false'
+    });
   }
   
-  if (isAllowed) {
-    console.log('✅ SETTING CORS HEADERS for:', origin);
-    // Set specific origin (NEVER use *)
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
-    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
-  } else {
-    console.log('❌ BLOCKING origin:', origin);
-    // Don't set any CORS headers for blocked origins
-  }
-  
-  // Handle preflight requests
+  // Handle preflight
   if (req.method === 'OPTIONS') {
-    console.log('🔄 Handling preflight OPTIONS request');
-    if (isAllowed) {
-      res.status(200).end();
-    } else {
-      res.status(403).json({ error: 'CORS blocked' });
-    }
-    return;
+    console.log('🔥 PREFLIGHT REQUEST - Returning 200');
+    return res.status(200).end();
   }
   
   next();
 });
-
-// ✅ DISABLE default CORS completely
-// app.use(cors()); // Commented out to prevent conflicts
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
