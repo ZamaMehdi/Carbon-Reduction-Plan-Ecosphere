@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const cors = require('cors');
+// const cors = require('cors'); // DISABLED - using manual CORS
 const dotenv = require('dotenv');
 
 console.log('🔍 Loading routes...');
@@ -17,30 +17,37 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// ✅ CORS Configuration
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://carbonreductionplanning.netlify.app"
-];
-
-app.use(
-  cors()
-);
+// ✅ BULLETPROOF CORS - Allow ALL origins
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log('🚀 BULLETPROOF CORS - Origin:', origin);
+  
+  // Allow ALL origins - set exact origin to avoid wildcard + credentials issue
+  if (origin) {
+    console.log('✅ Setting CORS headers for:', origin);
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    console.log('✅ Setting CORS headers for: * (no origin)');
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
+  res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    console.log('🔄 PREFLIGHT handled');
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-// Debug middleware to log all response headers
-app.use((req, res, next) => {
-  const originalSend = res.send;
-  res.send = function(data) {
-    console.log('🔍 Final CORS headers being sent:');
-    console.log('  Access-Control-Allow-Origin:', res.get('Access-Control-Allow-Origin'));
-    console.log('  Access-Control-Allow-Credentials:', res.get('Access-Control-Allow-Credentials'));
-    originalSend.call(this, data);
-  };
-  next();
-});
 
 // Session setup
 app.use(session({
