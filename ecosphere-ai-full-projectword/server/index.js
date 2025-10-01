@@ -13,30 +13,24 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// ✅ BULLETPROOF CORS - Manual implementation
+// ✅ BULLETPROOF CORS - Allow ALL origins
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   console.log('🚀 BULLETPROOF CORS - Origin:', origin);
   
-  // Allow specific origins
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://carbon-reduction-plan-ecosphere-dta2cnql3-zamamehdis-projects.vercel.app'
-  ];
-  
-  if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app') || origin.includes('localhost')) {
+  // Allow ALL origins - set exact origin to avoid wildcard + credentials issue
+  if (origin) {
     console.log('✅ Setting CORS headers for:', origin);
-    
-    // CRITICAL: Set exact origin, never wildcard
     res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true'); // Re-enabled for local development
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
-    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   } else {
-    console.log('❌ Blocking origin:', origin);
+    console.log('✅ Setting CORS headers for: * (no origin)');
+    res.header('Access-Control-Allow-Origin', '*');
   }
+  
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
+  res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   
   // Handle preflight
   if (req.method === 'OPTIONS') {
