@@ -17,6 +17,11 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
+const allowedOrigins = [
+  "https://carbonreductionplanning.netlify.app",
+  "http://localhost:5173", // for dev
+];
+
 // ✅ BULLETPROOF CORS - Allow ALL origins
 app.use((req, res, next) => {
   const origin = req.headers.origin;
