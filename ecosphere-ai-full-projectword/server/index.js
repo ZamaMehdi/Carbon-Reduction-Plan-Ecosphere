@@ -13,35 +13,37 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// ✅ Middleware
+// ✅ CORS Configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://carbon-reduction-plan-ecosphere.vercel.app'
+];
+
+// Function to check if origin is allowed (including all Vercel domains)
+function isOriginAllowed(origin) {
+  if (!origin) return true; // Allow requests with no origin
+  if (origin.includes('localhost')) return true; // Allow localhost
+  if (origin.includes('vercel.app')) return true; // Allow all Vercel domains
+  return allowedOrigins.includes(origin);
+}
+
 app.use(cors({
   origin: function (origin, callback) {
     console.log('🔍 CORS Origin check:', origin);
     
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) {
-      console.log('✅ Allowing request with no origin');
-      return callback(null, true);
+    if (isOriginAllowed(origin)) {
+      console.log('✅ Allowing origin:', origin);
+      callback(null, true);
+    } else {
+      console.log('❌ Blocking origin:', origin);
+      callback(new Error('Not allowed by CORS'));
     }
-    
-    // Allow localhost for development
-    if (origin.includes('localhost')) {
-      console.log('✅ Allowing localhost origin:', origin);
-      return callback(null, true);
-    }
-    
-    // Allow all Vercel domains
-    if (origin.includes('vercel.app')) {
-      console.log('✅ Allowing Vercel origin:', origin);
-      return callback(null, true);
-    }
-    
-    console.log('❌ Blocking origin:', origin);
-    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
+  exposedHeaders: ['Set-Cookie'],
 }));
 
 app.use(express.json({ limit: '50mb' }));
