@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const cors = require('cors');
+// const cors = require('cors'); // DISABLED - using manual CORS
 const dotenv = require('dotenv');
 
 const adminRoutes = require('./routes/admin.routes');
@@ -13,26 +13,39 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// ✅ CLEAN CORS CONFIGURATION - No wildcards ever
-const allowedOrigins = [
-  "https://carbon-reduction-plan-ecosphere-dta2cnql3-zamamehdis-projects.vercel.app",
-  "http://localhost:5173",
-  "http://localhost:3000"
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    console.log('🔍 CORS Origin check:', origin);
-    if (!origin || allowedOrigins.includes(origin)) {
-      console.log('✅ Allowing origin:', origin);
-      callback(null, origin);
-    } else {
-      console.log('❌ Blocking origin:', origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
+// ✅ BULLETPROOF CORS - Manual implementation
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log('🚀 BULLETPROOF CORS - Origin:', origin);
+  
+  // Allow specific origins
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://carbon-reduction-plan-ecosphere-dta2cnql3-zamamehdis-projects.vercel.app'
+  ];
+  
+  if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app') || origin.includes('localhost')) {
+    console.log('✅ Setting CORS headers for:', origin);
+    
+    // CRITICAL: Set exact origin, never wildcard
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'false'); // TEMPORARILY DISABLED
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  } else {
+    console.log('❌ Blocking origin:', origin);
+  }
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    console.log('🔄 PREFLIGHT handled');
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
