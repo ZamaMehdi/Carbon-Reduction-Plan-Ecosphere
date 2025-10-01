@@ -114,6 +114,25 @@ app.get('/test-set-cookie', (req, res) => {
   });
 });
 
+// ✅ Test route to verify server is working
+app.get('/test-server', (req, res) => {
+  res.json({ 
+    message: 'Server is working!', 
+    timestamp: new Date().toISOString(),
+    routes: ['/auth', '/reports', '/admin']
+  });
+});
+
+// ✅ Direct auth/me test route
+app.get('/auth/me', (req, res) => {
+  console.log('🧪 DIRECT /auth/me route hit');
+  res.json({ 
+    message: 'Direct auth/me route working!', 
+    session: req.session,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // ✅ Routes
 app.use('/auth', authRoutes);
 app.use('/reports', reportRoutes);
