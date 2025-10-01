@@ -5,9 +5,13 @@ const MongoStore = require('connect-mongo');
 // const cors = require('cors'); // DISABLED - using manual CORS
 const dotenv = require('dotenv');
 
+console.log('🔍 Loading routes...');
 const adminRoutes = require('./routes/admin.routes');
+console.log('✅ Admin routes loaded');
 const authRoutes = require('./routes/auth.routes');
+console.log('✅ Auth routes loaded');
 const reportRoutes = require('./routes/report.routes');
+console.log('✅ Report routes loaded');
 
 dotenv.config();
 const app = express();
@@ -121,27 +125,31 @@ app.get('/test-set-cookie', (req, res) => {
 
 // ✅ Test route to verify server is working
 app.get('/test-server', (req, res) => {
-  res.json({ 
-    message: 'Server is working!', 
+  res.json({
+    message: 'Server is working!',
     timestamp: new Date().toISOString(),
-    routes: ['/auth', '/reports', '/admin']
+    routes: ['/auth', '/reports', '/admin'],
+    version: '1.0.0'
   });
 });
 
-// ✅ Direct auth/me test route
-app.get('/auth/me', (req, res) => {
-  console.log('🧪 DIRECT /auth/me route hit');
-  res.json({ 
-    message: 'Direct auth/me route working!', 
-    session: req.session,
-    timestamp: new Date().toISOString()
+// ✅ Test route for auth specifically
+app.get('/test-auth', (req, res) => {
+  res.json({
+    message: 'Auth routes should be working!',
+    timestamp: new Date().toISOString(),
+    authRoutes: ['/auth/me', '/auth/login', '/auth/signup']
   });
 });
 
 // ✅ Routes
+console.log('🔍 Mounting auth routes...');
 app.use('/auth', authRoutes);
+console.log('🔍 Mounting report routes...');
 app.use('/reports', reportRoutes);
+console.log('🔍 Mounting admin routes...');
 app.use('/admin', adminRoutes);
+console.log('✅ All routes mounted successfully');
 
 // ✅ Connect to MongoDB and start server
 console.log('🔍 Starting server...');
