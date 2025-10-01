@@ -31,6 +31,16 @@ app.use(cors({
   credentials: true,
 }));
 
+// ✅ DEBUG: Log CORS headers being sent
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    console.log('🔍 CORS headers being sent:');
+    console.log('  Access-Control-Allow-Origin:', res.get('Access-Control-Allow-Origin'));
+    console.log('  Access-Control-Allow-Credentials:', res.get('Access-Control-Allow-Credentials'));
+  });
+  next();
+});
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -65,11 +75,26 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// ✅ Test CORS endpoint
+// ✅ Test endpoints for debugging
 app.get('/test-cors', (req, res) => {
   console.log('🧪 TEST CORS endpoint hit');
   res.json({ 
     message: 'CORS test successful', 
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/test-set-cookie', (req, res) => {
+  console.log('🧪 TEST SET COOKIE endpoint hit');
+  res.cookie('test-cookie', 'test-value', {
+    maxAge: 60 * 1000, // 1 minute
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+  });
+  res.json({ 
+    message: 'Test cookie set', 
     origin: req.headers.origin,
     timestamp: new Date().toISOString()
   });
