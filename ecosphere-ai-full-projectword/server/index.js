@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-// const cors = require('cors'); // DISABLED - using manual CORS
+// const cors = require('cors'); // COMPLETELY DISABLED - using manual CORS
 const dotenv = require('dotenv');
 
 console.log('🔍 Loading routes...');
@@ -21,6 +21,8 @@ app.set('trust proxy', 1); // 🧩 IMPORTANT
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   console.log('🚀 BULLETPROOF CORS - Origin:', origin);
+  console.log('🚀 BULLETPROOF CORS - Method:', req.method);
+  console.log('🚀 BULLETPROOF CORS - URL:', req.url);
   
   // List of allowed origins
   const allowedOrigins = [
@@ -40,15 +42,14 @@ app.use((req, res, next) => {
   if (isAllowedOrigin) {
     console.log('✅ Setting CORS headers for:', origin);
     res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
+    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   } else {
     console.log('❌ Origin not allowed:', origin);
-    // Don't set any origin header for disallowed origins
+    // Don't set any CORS headers for disallowed origins
   }
-  
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
-  res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   
   // Handle preflight
   if (req.method === 'OPTIONS') {
@@ -62,6 +63,18 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Debug middleware to log all response headers
+app.use((req, res, next) => {
+  const originalSend = res.send;
+  res.send = function(data) {
+    console.log('🔍 Final CORS headers being sent:');
+    console.log('  Access-Control-Allow-Origin:', res.get('Access-Control-Allow-Origin'));
+    console.log('  Access-Control-Allow-Credentials:', res.get('Access-Control-Allow-Credentials'));
+    originalSend.call(this, data);
+  };
+  next();
+});
 
 // Session setup
 app.use(session({
