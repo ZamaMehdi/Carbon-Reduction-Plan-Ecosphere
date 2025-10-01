@@ -144,12 +144,12 @@ const LoginPage = ({ onLoginSuccess, onNavigateToSignup }) => {
 <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
   <div className="flex items-center justify-center mb-6">
     <img
-      src="/Logologin.png"
+      src="/logo.png"
       alt="EcoSphere Logo"
       className="mr-5"
-      style={{ width: '70px', height: '70px' }}
+      style={{ width: '80px', height: '80px' }}
     />
-    <h2 className="text-2xl font-bold text-gray-900">Login to EcoSphere AI</h2>
+    <h2 className="text-2xl font-bold text-gray-900">Login to CRP</h2>
   </div>
 
         {!showForgot ? (

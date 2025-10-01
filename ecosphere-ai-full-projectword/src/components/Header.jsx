@@ -15,8 +15,8 @@ const Header = ({ onLogout }) => {
     <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 w-full">
     <div className="w-full sm:w-auto flex justify-center sm:justify-start">
       <img
-        src="/EcoSphere-AI-Banner.png"
-        alt="EcoSphere AI Banner"
+        src="/carbonreductionplanning.png"
+        alt="Carbon Reduction Planning"
         className="max-h-40 sm:max-h-52 w-auto object-contain"
       />
     </div>

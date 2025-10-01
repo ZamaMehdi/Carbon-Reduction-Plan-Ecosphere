@@ -48,18 +48,13 @@ router.post('/verify-signup-code', (req, res) => {
 router.post('/signup', async (req, res) => {
   const { email, password } = req.body;
 
-  const record = signupCodes.get(email);
-  if (!record || !record.verified) {
-    return res.status(400).json({ message: 'Email not verified' });
-  }
-
+  // Check if user already exists
   const userExists = await User.findOne({ email });
   if (userExists) return res.status(400).json({ message: 'User already exists' });
 
+  // Create user directly without email verification
   const user = await User.create({ email, password });
   req.session.userId = user._id;
-
-  signupCodes.delete(email); // Clear code after successful signup
 
   res.status(201).json({ userId: user._id });
 });

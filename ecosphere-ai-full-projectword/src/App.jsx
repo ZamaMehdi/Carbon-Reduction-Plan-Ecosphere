@@ -70,6 +70,7 @@ function App() {
   const [userInfo, setUserInfo] = useState(null);
   const [isFormLocked, setIsFormLocked] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [chartsAreFloating, setChartsAreFloating] = useState(false);
   const { addBranch, removeBranch, handleBranchChange } = useBranchHandler(formData, setFormData);
   const navigate = useNavigate();
   const reportDisplayRef = useRef();
@@ -294,7 +295,7 @@ function App() {
         path="/"
         element={
           <div className="bg-custom-gold min-h-screen py-8">
-            <main className="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <main className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
               <Header
                 onLogout={async () => {
                   try {

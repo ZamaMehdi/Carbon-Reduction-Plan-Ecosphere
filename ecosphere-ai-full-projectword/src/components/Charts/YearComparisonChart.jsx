@@ -134,8 +134,8 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
   
 
   const containerStyle = {
-    width: isFloating ? (isLarge ? 600 : 500) : '100%',
-    height: isFloating ? (isLarge ? 360 : 300) : 300
+    width: isFloating ? 350 : '100%',
+    height: isFloating ? 280 : 300
   };
   
 
