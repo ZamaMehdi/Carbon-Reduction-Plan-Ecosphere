@@ -29,7 +29,8 @@ app.use((req, res, next) => {
     'http://localhost:5173',
     'http://localhost:3000',
     'https://carbonreductionplanning.netlify.app',
-    'https://carbon-reduction-plan-ecosphere.vercel.app'
+    'https://carbon-reduction-plan-ecosphere.vercel.app',
+    'https://carbonreductionplanning.netlify.app/'
   ];
   
   // Allow specific origins or any vercel.app/netlify.app domain
