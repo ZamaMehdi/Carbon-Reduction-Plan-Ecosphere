@@ -31,8 +31,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
   }
   
-  // Temporarily disable credentials to fix CORS issue
-  // res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
   res.header('Access-Control-Expose-Headers', 'Set-Cookie');
@@ -63,8 +62,8 @@ app.use(session({
   cookie: {
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: "none",   // 👈 needed for cross-domain
-    secure: true,       // 👈 must be true on HTTPS
+    sameSite: "lax",    // 👈 better for localhost development
+    secure: false,      // 👈 false for localhost HTTP
   },
 }));
 
