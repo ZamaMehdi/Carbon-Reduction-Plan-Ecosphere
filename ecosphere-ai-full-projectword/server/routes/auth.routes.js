@@ -10,39 +10,6 @@ const crypto = require('crypto');
 // In-memory store for reset codes (temporary)
 const resetCodes = new Map();
 
-// In-memory store for signup codes
-const signupCodes = new Map();
-
-// Send 6-digit code for signup
-router.post('/request-signup-code', async (req, res) => {
-  const { email } = req.body;
-
-  const existing = await User.findOne({ email });
-  if (existing) return res.status(400).json({ message: 'Email already registered' });
-
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  signupCodes.set(email, { code, expires: Date.now() + 15 * 60 * 1000 });
-
-  sendPasswordResetCode(email, code); // Reuse same email function
-
-  res.json({ message: 'Verification code sent' });
-});
-
-router.post('/verify-signup-code', (req, res) => {
-  const { email, code } = req.body;
-  const record = signupCodes.get(email);
-
-  if (!record || record.code !== code || Date.now() > record.expires) {
-    return res.status(400).json({ message: 'Invalid or expired code' });
-  }
-
-  // Mark verified — here we just set a flag for use in final signup
-  record.verified = true;
-  signupCodes.set(email, record);
-
-  res.json({ message: 'Email verified. Proceed to set password.' });
-});
-
 
 // Signup
 router.post('/signup', async (req, res) => {
@@ -63,9 +30,22 @@ router.post('/signup', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+  console.log('🔍 Login attempt for email:', email);
+  
   try {
     const user = await User.findOne({ email });
-    if (!user || !(await user.matchPassword(password))) {
+    console.log('🔍 User found:', user ? 'Yes' : 'No');
+    
+    if (!user) {
+      console.log('❌ User not found');
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+    
+    const passwordMatch = await user.matchPassword(password);
+    console.log('🔍 Password match:', passwordMatch);
+    
+    if (!passwordMatch) {
+      console.log('❌ Password does not match');
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
@@ -73,14 +53,22 @@ router.post('/login', async (req, res) => {
     console.log('🔍 Session BEFORE setting userId:', req.session);
     
     req.session.userId = user._id;
+    
+    // Save the session explicitly
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save failed:', err);
+        return res.status(500).json({ message: 'Session save failed' });
+      }
 
-    // ✅ AFTER setting session
-    console.log('✅ Session AFTER setting userId:', req.session);
+      // ✅ AFTER setting session
+      console.log('✅ Session AFTER setting userId:', req.session);
 
-    res.json({ userId: user._id });
+      res.json({ userId: user._id });
+    });
+    
   } catch (err) {
     console.error('❌ Login failed:', err);
-
     res.status(500).json({ message: 'Login failed' });
   }
 });
@@ -140,12 +128,21 @@ router.post('/reset-password', async (req, res) => {
 // Me (session check)
 router.get('/me', async (req, res) => {
   console.log('👀 Session on /me:', req.session); // 🔍
+  console.log('👀 Session ID:', req.sessionID);
+  console.log('👀 Session userId:', req.session.userId);
 
-  if (!req.session.userId) return res.status(401).json({ message: 'Not logged in' });
+  if (!req.session.userId) {
+    console.log('❌ No userId in session');
+    return res.status(401).json({ message: 'Not logged in' });
+  }
 
   const user = await User.findById(req.session.userId).select('email');
-  if (!user) return res.status(404).json({ message: 'User not found' });
+  if (!user) {
+    console.log('❌ User not found in database');
+    return res.status(404).json({ message: 'User not found' });
+  }
 
+  console.log('✅ User found:', user.email);
   res.json({ userId: user._id, email: user.email });
 });
 
