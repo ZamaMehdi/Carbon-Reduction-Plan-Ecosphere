@@ -30,9 +30,10 @@ app.use((req, res, next) => {
     
     // CRITICAL: Set exact origin, never wildcard
     res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'false'); // TEMPORARILY DISABLED
+    res.header('Access-Control-Allow-Credentials', 'true'); // Re-enabled for local development
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, X-Requested-With');
+    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   } else {
     console.log('❌ Blocking origin:', origin);
   }
@@ -81,12 +82,21 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// ✅ Test endpoints for debugging
+// ✅ Health check endpoint (works before MongoDB connection)
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Server is running', 
     timestamp: new Date().toISOString(),
-    origin: req.headers.origin
+    origin: req.headers.origin,
+    status: 'OK'
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
   });
 });
 
@@ -139,29 +149,23 @@ app.use('/reports', reportRoutes);
 app.use('/admin', adminRoutes);
 
 // ✅ Connect to MongoDB and start server
+console.log('🔍 Starting server...');
+console.log('🔍 MONGO_URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
+console.log('🔍 PORT:', process.env.PORT || 5000);
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB');
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(`🚀 Server running on port ${process.env.PORT || 5000}`);
+    const port = process.env.PORT || 5000;
+    app.listen(port, () => {
+      console.log(`🚀 Server running on port ${port}`);
+      console.log(`🚀 Server URL: https://carbon-emission-2.onrender.com`);
+      console.log(`🚀 Test endpoint: https://carbon-emission-2.onrender.com/test-server`);
     });
   })
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err);
+    console.error('❌ Server failed to start');
   });
-
-  app.get('/test-set-cookie', (req, res) => {
-    res.cookie('debugCookie', 'cookie123', {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
-    });
-    res.send('🍪 Debug cookie set!');
-  });
-
-  app.get('/test-auth', (req, res) => {
-    res.json({ user: req.user || null, session: req.session });
-  });
-  
   

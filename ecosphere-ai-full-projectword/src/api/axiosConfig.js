@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://carbon-emission-2.onrender.com',
-  withCredentials: false, // TEMPORARILY DISABLED TO TEST CORS
+  baseURL: import.meta.env.VITE_API_URL || 'https://carbon-emission-2.onrender.com', // Use Render backend for production
+  withCredentials: true, // Enable credentials for sessions
   headers: {
     'Content-Type': 'application/json',
   }
