@@ -15,11 +15,21 @@ app.set('trust proxy', 1); // 🧩 IMPORTANT
 
 // ✅ Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'https://carbon-reduction-plan-ecosphere.vercel.app',
-    'https://carbon-reduction-plan-ecosphere-gz696flua-zamamehdis-projects.vercel.app'
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost for development
+    if (origin.includes('localhost')) return callback(null, true);
+    
+    // Allow all Vercel domains
+    if (origin.includes('vercel.app')) return callback(null, true);
+    
+    // Allow the main production domain
+    if (origin === 'https://carbon-reduction-plan-ecosphere.vercel.app') return callback(null, true);
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 
