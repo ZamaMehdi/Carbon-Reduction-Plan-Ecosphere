@@ -9,3 +9,10 @@
 
 [build.environment]
   NODE_VERSION = "18"
+
+  [[headers]]
+for = "/api/*"
+[headers.values]
+Access-Control-Allow-Origin = "https://carbon-reduction-plan-ecosphere.netlify.app"
+Access-Control-Allow-Credentials = "true"
+
