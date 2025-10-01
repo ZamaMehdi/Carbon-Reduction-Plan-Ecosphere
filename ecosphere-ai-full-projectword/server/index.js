@@ -18,21 +18,14 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
   console.log('🚀 BULLETPROOF CORS - Origin:', origin);
   
-  // Allow specific origins based on environment
-  const isProduction = process.env.NODE_ENV === 'production';
+  // Allow specific origins
   const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
-    // Add your Vercel domain(s) here
     'https://carbon-reduction-plan-ecosphere-dta2cnql3-zamamehdis-projects.vercel.app'
   ];
-
-  const isAllowedOrigin = !origin || 
-    allowedOrigins.includes(origin) || 
-    (!isProduction && origin.includes('localhost')) ||
-    (isProduction && origin.includes('vercel.app'));
-
-  if (isAllowedOrigin) {
+  
+  if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app') || origin.includes('localhost')) {
     console.log('✅ Setting CORS headers for:', origin);
     
     // CRITICAL: Set exact origin, never wildcard
@@ -71,8 +64,8 @@ app.use(session({
   cookie: {
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
-    secure: process.env.NODE_ENV === 'production', // true for HTTPS, false for HTTP
+    sameSite: "none",   // 👈 needed for cross-domain
+    secure: true,       // 👈 must be true on HTTPS
   },
 }));
 
@@ -121,8 +114,8 @@ app.get('/test-set-cookie', (req, res) => {
   res.cookie('debugCookie', 'cookie123', {
     maxAge: 60 * 1000, // 1 minute
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
-    secure: process.env.NODE_ENV === 'production'
+    sameSite: "none",
+    secure: true
   });
   res.json({ 
     message: 'Test cookie set', 
@@ -140,7 +133,15 @@ app.get('/test-server', (req, res) => {
   });
 });
 
-// ✅ Direct auth/me test route - REMOVED (was overriding actual auth route)
+// ✅ Direct auth/me test route
+app.get('/auth/me', (req, res) => {
+  console.log('🧪 DIRECT /auth/me route hit');
+  res.json({ 
+    message: 'Direct auth/me route working!', 
+    session: req.session,
+    timestamp: new Date().toISOString()
+  });
+});
 
 // ✅ Routes
 app.use('/auth', authRoutes);
@@ -149,9 +150,6 @@ app.use('/admin', adminRoutes);
 
 // ✅ Connect to MongoDB and start server
 console.log('🔍 Starting server...');
-console.log('🔍 NODE_ENV:', process.env.NODE_ENV || 'development');
-console.log('🔍 Session config - secure:', process.env.NODE_ENV === 'production' ? 'true (HTTPS)' : 'false (HTTP)');
-console.log('🔍 Session config - sameSite:', process.env.NODE_ENV === 'production' ? 'none' : 'lax');
 console.log('🔍 MONGO_URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
 console.log('🔍 PORT:', process.env.PORT || 5000);
 
