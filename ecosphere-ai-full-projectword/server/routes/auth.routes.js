@@ -2,7 +2,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
-const { sendPasswordResetCode } = require('../utils/email');
+// const { sendPasswordResetCode } = require('../utils/email'); // Temporarily disabled
 
 const router = express.Router();
 const crypto = require('crypto');
@@ -90,7 +90,7 @@ router.post('/forgot-password', async (req, res) => {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   resetCodes.set(email, { code, expires: Date.now() + 15 * 60 * 1000 });
 
-  sendPasswordResetCode(email, code);
+  // sendPasswordResetCode(email, code); // Temporarily disabled
   res.json({ message: 'Reset code sent' });
 });
 

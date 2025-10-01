@@ -17,18 +17,32 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1); // 🧩 IMPORTANT
 
-// ✅ BULLETPROOF CORS - Allow ALL origins
+// ✅ BULLETPROOF CORS - Allow specific origins
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   console.log('🚀 BULLETPROOF CORS - Origin:', origin);
   
-  // Allow ALL origins - set exact origin to avoid wildcard + credentials issue
-  if (origin) {
+  // List of allowed origins
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://carbonreductionplanning.netlify.app',
+    'https://carbon-reduction-plan-ecosphere.vercel.app'
+  ];
+  
+  // Allow specific origins or any vercel.app/netlify.app domain
+  const isAllowedOrigin = origin && (
+    allowedOrigins.includes(origin) || 
+    origin.includes('vercel.app') || 
+    origin.includes('netlify.app')
+  );
+  
+  if (isAllowedOrigin) {
     console.log('✅ Setting CORS headers for:', origin);
     res.header('Access-Control-Allow-Origin', origin);
   } else {
-    console.log('✅ Setting CORS headers for: * (no origin)');
-    res.header('Access-Control-Allow-Origin', '*');
+    console.log('❌ Origin not allowed:', origin);
+    // Don't set any origin header for disallowed origins
   }
   
   res.header('Access-Control-Allow-Credentials', 'true');
