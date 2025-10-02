@@ -239,6 +239,15 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    // Check if user is logged in
+    if (!userInfo?.email) {
+      setSubmissionStatus({
+        message: 'Please log in to save your report.',
+        type: 'error',
+      });
+      return;
+    }
+  
     const requiredFields = [
       { key: 'organisationName', label: 'Organisation Name' },
       { key: 'companyNumber', label: 'Company Number' },
@@ -264,6 +273,7 @@ function App() {
       // ⬇️ Attach it to the data
       const payload = {
         ...formData,
+        userEmail: userInfo?.email, // Add user email to payload
         scopePieChart: scopeChartImage,
       };
   
