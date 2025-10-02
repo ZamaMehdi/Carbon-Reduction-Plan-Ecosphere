@@ -113,6 +113,42 @@ router.get('/my-report', requireAuth, async (req, res) => {
   }
  });
 
+// Temporary route to fix reports without userId
+router.post('/fix-user-links', async (req, res) => {
+  try {
+    // Find all reports without userId but with userEmail
+    const reportsWithoutUserId = await Report.find({
+      userId: { $exists: false },
+      userEmail: { $exists: true }
+    });
+
+    console.log(`Found ${reportsWithoutUserId.length} reports without userId`);
+
+    let fixedCount = 0;
+    for (const report of reportsWithoutUserId) {
+      // Find user by email
+      const user = await User.findOne({ email: report.userEmail });
+      if (user) {
+        report.userId = user._id;
+        await report.save();
+        fixedCount++;
+        console.log(`Fixed report ${report._id} for user ${user.email}`);
+      } else {
+        console.log(`No user found for email: ${report.userEmail}`);
+      }
+    }
+
+    res.json({ 
+      message: `Fixed ${fixedCount} out of ${reportsWithoutUserId.length} reports`,
+      fixedCount,
+      totalReports: reportsWithoutUserId.length
+    });
+  } catch (err) {
+    console.error('Error fixing user links:', err);
+    res.status(500).json({ message: 'Error fixing user links', error: err.message });
+  }
+});
+
 //  router.post("/generate-docx", async (req, res) => {
 //   const { reportData, scopeChartImage } = req.body;
 //   try {
@@ -129,7 +165,7 @@ router.get('/my-report', requireAuth, async (req, res) => {
 // });
 
 
- router.post('/', async (req, res) => {
+ router.post('/', requireAuth, async (req, res) => {
   try {
     console.log('📦 Incoming report data:', JSON.stringify(req.body, null, 2));
     
@@ -192,6 +228,7 @@ router.get('/my-report', requireAuth, async (req, res) => {
     // 🆕 Always create a new report
     const newReport = await Report.create({
       ...req.body,
+      userId: req.user._id, // Link report to user
       userEmail: req.body.userEmail,
       locked: true,
       submitted: true,
