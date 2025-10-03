@@ -157,18 +157,141 @@
   .print-only {
     display: block;
   }
+  /* Show charts and summary in print only */
+  .print-hide.chart-container-card {
+    display: block !important;
+  }
+  .print-hide .narrative-card {
+    display: block !important;
+  }
+  /* Show Year-on-Year Summary in print */
+  .print-hide:has(.narrative-card) {
+    display: block !important;
+  }
+  /* Force charts to be static (non-floating) in print */
+  .print-hide.chart-container-card > div {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: auto !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .print-hide.chart-container-card canvas {
+    width: 100% !important;
+    height: 300px !important;
+  }
   @page {
     size: A4;
     margin: 0.5in;
   }
+  /* Remove page breaks to prevent blank first page */
+  html, body {
+    break-before: avoid !important;
+    page-break-before: avoid !important;
+  }
+  .print-container {
+    break-before: avoid !important;
+    page-break-before: avoid !important;
+  }
+  .print-container > *:first-child {
+    break-before: avoid !important;
+    page-break-before: avoid !important;
+  }
+  /* Hide header in print */
+  header {
+    display: none !important;
+  }
+  /* Hide navigation links in print */
+  a[href*="my-reports"] {
+    display: none !important;
+  }
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    background: white !important;
+  }
+  /* Hide background images and fix container alignment for print */
+  * {
+    background-image: none !important;
+    background-color: white !important;
+  }
+  /* Ensure main container is properly aligned for print */
+  .print-container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: white !important;
+  }
+  /* Fix form sections for print */
+  .section-card {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    margin-bottom: 1rem !important;
+    padding: 1rem !important;
+    break-inside: avoid;
+    page-break-after: avoid;
+  }
+  /* Ensure proper text colors for print */
+  .section-title-gradient {
+    background: #000000 !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    margin: 0 0 1rem 0 !important;
   }
   .print-avoid-break {
     break-inside: avoid;
   }
   .print-break-after-avoid {
     break-after: avoid;
+  }
+  /* Chart styles for print */
+  .chart-container-card {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+    break-inside: avoid;
+  }
+  /* Ensure charts are visible and properly sized for print */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  /* Force charts to be static (non-floating) in print */
+  .print-static-charts {
+    position: relative !important;
+  }
+  .print-static-charts > div {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: auto !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .print-static-charts canvas {
+    width: 100% !important;
+    height: 300px !important;
+  }
+  /* Hide floating controls in print */
+  .chart-container-card button {
+    display: none !important;
+  }
+  /* Narrative card styles for print */
+  .narrative-card {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+    break-inside: avoid;
   }
 }

@@ -393,7 +393,7 @@ function App() {
               backgroundAttachment: "fixed"
             }}
           >
-            <main className="mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8" style={{ 
+            <main className="mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8 print-container" style={{ 
               maxWidth: screenSize === 'small' ? '95%' : 
                        screenSize === 'medium' ? `${responsiveDimensions?.formWidth || 700}px` : '886px',
               marginLeft: screenSize === 'medium' && responsiveDimensions?.formLeftShift ? 
@@ -475,7 +475,7 @@ function App() {
          <TestCookie />
           </div> */}
 
-              {submissionStatus && <p className="mt-4 text-center text-lg">{submissionStatus.message}</p>}
+              {submissionStatus && <p className="mt-4 text-center text-lg print-hide">{submissionStatus.message}</p>}
               <div className="h-[400px] sm:h-[420px] bg-transparent" />
             </main>
           </div>
