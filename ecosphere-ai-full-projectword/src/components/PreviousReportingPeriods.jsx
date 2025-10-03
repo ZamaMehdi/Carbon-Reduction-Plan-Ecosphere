@@ -81,7 +81,7 @@ const PreviousReportingPeriod = ({ data, handleChange, previousPeriods, handlePr
 
       {!data.isFirstPlan && (
         <div>
-            <h2 className="section-title-gradient" style={{ backgroundColor: '#6366f1' }}>
+            <h2 className="section-title-gradient" style={{ backgroundColor: '#000000' }}>
          4. Previous Reporting Periods
          </h2>
           <label className="form-label-styled">Number of previous 12-month periods to include:</label>
@@ -89,7 +89,7 @@ const PreviousReportingPeriod = ({ data, handleChange, previousPeriods, handlePr
             name="numPreviousPeriods"
             value={data.numPreviousPeriods}
             onChange={handleChange}
-            className="form-select-styled focus:ring-pink-400"
+            className="form-select-styled focus:ring-gray-400"
             disabled={isLocked}
           >
             <option value={0}>0 (Current year only)</option>
@@ -102,7 +102,7 @@ const PreviousReportingPeriod = ({ data, handleChange, previousPeriods, handlePr
             {previousPeriods.map((period) => {
               const endMonthName = months[data.endMonth - 1];
               return (
-                <div key={period.year} className="narrative-card bg-pink-50 border-pink-400">
+                <div key={period.year} className="narrative-card bg-gray-200 border-gray-400">
                   <h3 className="font-bold text-purple-700 mb-3 text-lg">
                     Data for {period.year} (ending {endMonthName} {period.year})
                   </h3>
@@ -111,7 +111,7 @@ const PreviousReportingPeriod = ({ data, handleChange, previousPeriods, handlePr
                       <label className="form-label-styled">Scope 1 Emissions (tCO2e):</label>
                       <input
                         type="number"
-                        className="form-input-styled focus:ring-pink-400"
+                        className="form-input-styled focus:ring-gray-400"
                         placeholder="e.g., 50.00"
                         value={period.scope1}
                         onChange={e => handlePreviousPeriodChange(period.year, 'scope1', e.target.value)}
@@ -122,7 +122,7 @@ const PreviousReportingPeriod = ({ data, handleChange, previousPeriods, handlePr
                       <label className="form-label-styled">Scope 2 Emissions (tCO2e):</label>
                       <input
                         type="number"
-                        className="form-input-styled focus:ring-pink-400"
+                        className="form-input-styled focus:ring-gray-400"
                         placeholder="e.g., 20.00"
                         value={period.scope2}
                         onChange={e => handlePreviousPeriodChange(period.year, 'scope2', e.target.value)}
@@ -133,7 +133,7 @@ const PreviousReportingPeriod = ({ data, handleChange, previousPeriods, handlePr
                       <label className="form-label-styled">Scope 3 Emissions (tCO2e):</label>
                       <input
                         type="number"
-                        className="form-input-styled focus:ring-pink-400"
+                        className="form-input-styled focus:ring-gray-400"
                         placeholder="e.g., 100.00"
                         value={period.scope3}
                         onChange={e => handlePreviousPeriodChange(period.year, 'scope3', e.target.value)}

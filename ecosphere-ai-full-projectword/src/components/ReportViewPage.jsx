@@ -98,7 +98,16 @@ const ReportViewPage = ({ isAdminView = false }) => {
   if (!report) return <p>Report not found.</p>;
 
   return (
-    <div className="p-6">
+    <div 
+      className="min-h-screen py-8 bg-cover bg-center bg-no-repeat bg-fixed"
+      style={{ 
+        backgroundImage: "url('/bangkok-city.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        backgroundAttachment: "fixed"
+      }}
+    >
+      <div className="p-6">
       <button
         onClick={() => navigate(isAdminView ? '/admin' : '/my-reports')}
         className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -110,8 +119,8 @@ const ReportViewPage = ({ isAdminView = false }) => {
         {isAdminView ? 'Viewing Report (Admin)' : 'Submitted Report'}
       </h1>
 
-      <div className="flex justify-center bg-gray-100 py-8">
-        <div className="w-[794px] min-h-[1123px] bg-white shadow-lg border rounded-md p-8">
+      <div className="flex justify-center py-8">
+        <div className="w-[794px] min-h-[1123px] p-8">
           <ReportDisplay data={report} ref={pieChartRef}/>
           
           {/* Export Button - Admin Only */}
@@ -203,6 +212,7 @@ const ReportViewPage = ({ isAdminView = false }) => {
 </button> */}
 
         </div>
+      </div>
       </div>
     </div>
   );

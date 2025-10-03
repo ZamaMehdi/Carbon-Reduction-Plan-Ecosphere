@@ -7,8 +7,8 @@ const getApiUrl = () => {
   if (import.meta.env.PROD) {
     return import.meta.env.VITE_API_URL || 'https://carbon-emission-2.onrender.com';
   }
-  // For development, use localhost
-  return 'http://localhost:5000';
+  // For development, use the deployed server (can be overridden with VITE_API_URL)
+  return import.meta.env.VITE_API_URL || 'https://carbon-emission-2.onrender.com';
 };
 
 const api = axios.create({

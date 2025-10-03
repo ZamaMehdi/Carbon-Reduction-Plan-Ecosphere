@@ -27,7 +27,7 @@ const OrganisationDetails = ({
  
   return (
     <div className="section-card">
-      <h2 className="section-title-gradient" style={{ backgroundColor: '#6366f1' }}>
+      <h2 className="section-title-gradient" style={{ backgroundColor: '#000000' }}>
         2. Organisation Details
       </h2>
 

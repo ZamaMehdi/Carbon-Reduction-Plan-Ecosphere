@@ -3,7 +3,7 @@ import React from 'react';
 const ReportDetails = ({ data, handleChange, isLocked }) => {
   return (
     <div className="section-card">
-      <h2 className="section-title-gradient" style={{ backgroundColor: '#6366f1' }}>1. Report Details</h2>
+      <h2 className="section-title-gradient" style={{ backgroundColor: '#000000' }}>1. Report Details</h2>
       <div className="space-y-6">
         <div className="print-hide">
           <label htmlFor="publicationDate" className="form-label-styled">Publication Date:</label>

@@ -47,7 +47,8 @@ const LoginPage = ({ onLoginSuccess, onNavigateToSignup }) => {
       onLoginSuccess(user, latestReport);
   
       // ✅ Navigate only after data setup
-      if (user.email.toLowerCase() === 'admin@example.com') {
+      const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@example.com';
+      if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
         navigate('/admin');
       } else {
         navigate('/');

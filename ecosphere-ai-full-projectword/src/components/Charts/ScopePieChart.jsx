@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState ,
 import { Chart } from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-const ScopePieChart = forwardRef(({ scope1, scope2, scope3, isStatic = false }, ref) => {
+const ScopePieChart = forwardRef(({ scope1, scope2, scope3, isStatic = false, responsiveDimensions }, ref) => {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const sentinelRef = useRef(null);
@@ -12,10 +12,12 @@ const ScopePieChart = forwardRef(({ scope1, scope2, scope3, isStatic = false }, 
   const [isDismissed, setIsDismissed] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 400, height: 400 });
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isMediumScreen, setIsMediumScreen] = useState(false);
   
   // Check if we have valid emission data
   const hasValidData = (Number(scope1) || 0) + (Number(scope2) || 0) + (Number(scope3) || 0) > 0;
   const isFloating = !isStatic && isSticky && !isDismissed && !isSmallScreen && hasValidData;
+  const isMediumFloating = !isStatic && isSticky && !isDismissed && isMediumScreen && !isSmallScreen && hasValidData;
   const placeholderRef = useRef(null);
   const [placeholderHeight, setPlaceholderHeight] = useState(0);
   // const [isLarge, setIsLarge] = useState(false);
@@ -168,7 +170,9 @@ const ScopePieChart = forwardRef(({ scope1, scope2, scope3, isStatic = false }, 
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 768); // under ~10 inches width
+      const width = window.innerWidth;
+      setIsSmallScreen(width < 1024); // Hide charts on screens smaller than 1024px
+      setIsMediumScreen(width >= 1024 && width < 1440); // Adjust position on medium screens
     };
   
     checkScreenSize(); // initial check
@@ -180,8 +184,14 @@ const ScopePieChart = forwardRef(({ scope1, scope2, scope3, isStatic = false }, 
   
 
   const containerStyle = {
-    width: isFloating ? 300 : '50%',
-    height: isFloating ? 300 : 400
+    width: isFloating ? (
+      responsiveDimensions ? responsiveDimensions.chartSize : 
+      isMediumFloating ? 250 : 300
+    ) : '50%',
+    height: isFloating ? (
+      responsiveDimensions ? responsiveDimensions.chartSize : 
+      isMediumFloating ? 250 : 300
+    ) : 400
   };
   
 
@@ -195,11 +205,15 @@ const ScopePieChart = forwardRef(({ scope1, scope2, scope3, isStatic = false }, 
       <div
       ref={placeholderRef}
   className={`transition-all duration-300 shadow-lg bg-white rounded-lg ${
-    isFloating ? 'fixed top-4 right-4 z-50' : 'relative mx-auto'
+    isFloating ? (
+      responsiveDimensions ? `fixed top-4 z-50` : 
+      isMediumFloating ? 'fixed top-4 right-2 z-50' : 'fixed top-4 right-4 z-50'
+    ) : 'relative mx-auto'
   }`}  
   style={{
     ...containerStyle,
-    position: isStatic ? 'relative' : undefined
+    position: isStatic ? 'relative' : undefined,
+    right: isFloating && responsiveDimensions ? `${responsiveDimensions.chartRight}px` : undefined
   }}>
       
       {/* Show message when no data */}

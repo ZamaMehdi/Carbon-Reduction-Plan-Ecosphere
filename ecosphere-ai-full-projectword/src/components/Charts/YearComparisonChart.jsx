@@ -3,7 +3,7 @@ import { Chart } from 'chart.js/auto';
 
 const CHART_COLOURS = ['#1E90FF', '#3CB371', '#FF8C00'];
 
-const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3Data, isStatic = false }, ref) => {
+const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3Data, isStatic = false, responsiveDimensions }, ref) => {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const sentinelRef = useRef(null);
@@ -14,6 +14,7 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
   const placeholderRef = useRef(null);
   const [placeholderHeight, setPlaceholderHeight] = useState(0);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isMediumScreen, setIsMediumScreen] = useState(false);
   
   // Check if we have valid emission data
   const hasValidData = years && years.length > 0 && 
@@ -22,6 +23,7 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
      scope2Data.some(val => Number(val) > 0) || 
      scope3Data.some(val => Number(val) > 0));
   const isFloating = !isStatic && isSticky && !isDismissed && !isSmallScreen && hasValidData;
+  const isMediumFloating = !isStatic && isSticky && !isDismissed && isMediumScreen && !isSmallScreen && hasValidData;
 
   // Expose chart image method
   useImperativeHandle(ref, () => ({
@@ -124,7 +126,9 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 768); // approx. 10 inches
+      const width = window.innerWidth;
+      setIsSmallScreen(width < 1024); // Hide charts on screens smaller than 1024px
+      setIsMediumScreen(width >= 1024 && width < 1440); // Adjust position on medium screens
     };
   
     checkScreenSize(); // initial
@@ -134,8 +138,14 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
   
 
   const containerStyle = {
-    width: isFloating ? 350 : '100%',
-    height: isFloating ? 280 : 300
+    width: isFloating ? (
+      responsiveDimensions ? responsiveDimensions.chartSize : 
+      isMediumFloating ? 250 : 300
+    ) : '100%',
+    height: isFloating ? (
+      responsiveDimensions ? Math.round(responsiveDimensions.chartSize * 0.8) : 
+      isMediumFloating ? 200 : 250
+    ) : 300
   };
   
 
@@ -147,11 +157,15 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
             <div
               ref={placeholderRef}
                 className={`transition-all duration-300 shadow-lg bg-white rounded-lg p-2 ${
-                isFloating ? 'fixed bottom-4 right-4 z-50' : 'relative mx-auto'
+                isFloating ? (
+                  responsiveDimensions ? `fixed bottom-4 z-50` : 
+                  isMediumFloating ? 'fixed bottom-4 right-2 z-50' : 'fixed bottom-4 right-4 z-50'
+                ) : 'relative mx-auto'
               }`}        
               style={{
                 ...containerStyle,
-                position: isStatic ? 'relative' : undefined
+                position: isStatic ? 'relative' : undefined,
+                right: isFloating && responsiveDimensions ? `${responsiveDimensions.chartRight}px` : undefined
               }}
             >
               

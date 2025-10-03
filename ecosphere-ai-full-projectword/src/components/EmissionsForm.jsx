@@ -8,7 +8,7 @@ const EmissionsForm = ({ data, handleChange, isLocked }) => {
 
   return (
     <div className="section-card">
-      <h2 className="section-title-gradient" style={{backgroundImage: 'linear-gradient(90deg, #34d399 0%, #10b981 100%)'}}>5. Enter Emissions Data</h2>
+      <h2 className="section-title-gradient" style={{ backgroundColor: '#000000' }}>5. Enter Emissions Data</h2>
       <div className="space-y-8">
         
         {/* Vehicles Fleet */}

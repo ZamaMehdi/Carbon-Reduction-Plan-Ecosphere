@@ -46,7 +46,7 @@ const ReportingPeriod = ({ data, handleChange, isLocked }) => {
     <div className="section-card">
       <h2
         className="section-title-gradient"
-        style={{ backgroundColor: '#6366f1' }}
+        style={{ backgroundColor: '#000000' }}
       >
         3. Select Reporting Period (Last 12 Months)
       </h2>

@@ -71,21 +71,90 @@ function App() {
   const [isFormLocked, setIsFormLocked] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [chartsAreFloating, setChartsAreFloating] = useState(false);
+  const [screenSize, setScreenSize] = useState('large');
   const { addBranch, removeBranch, handleBranchChange } = useBranchHandler(formData, setFormData);
   const navigate = useNavigate();
   const reportDisplayRef = useRef();
   const location = useLocation();
   const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@example.com';
   console.log('🌐 Loaded ADMIN_EMAIL from env:', ADMIN_EMAIL);
+  console.log('🔍 VITE_ADMIN_EMAIL raw value:', import.meta.env.VITE_ADMIN_EMAIL);
+  console.log('🔍 All env vars:', import.meta.env);
   
   
    useEffect(() => {
     console.log('👤 Checking email for admin redirect:', userInfo?.email);
-    if (userInfo?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() && location.pathname === '/') {
-      console.log('✅ Redirecting to /admin');
-      navigate('/admin');
+    if (userInfo?.email && userInfo.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+      // Redirect admin users to admin dashboard from any page except admin pages
+      if (!location.pathname.startsWith('/admin')) {
+        console.log('✅ Redirecting admin to /admin from:', location.pathname);
+        navigate('/admin');
+      }
     }
    }, [userInfo, location]);
+
+  // Screen size detection for responsive form container
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      if (width < 1024) {
+        setScreenSize('small');
+      } else if (width < 1440) {
+        setScreenSize('medium');
+      } else {
+        setScreenSize('large');
+      }
+    };
+
+    checkScreenSize(); // Initial check
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  // Calculate responsive dimensions for medium screens
+  const getResponsiveDimensions = () => {
+    if (screenSize !== 'medium') return null;
+    
+    const width = window.innerWidth;
+    const minWidth = 1024;
+    const maxWidth = 1440;
+    const range = maxWidth - minWidth;
+    const currentPosition = (width - minWidth) / range; // 0 to 1
+    
+    // Form width: 700px to 886px
+    const formWidth = 700 + (currentPosition * 186);
+    
+    // Chart dimensions: 250px to 300px
+    const chartSize = 250 + (currentPosition * 50);
+    
+    // Chart position: right-2 to right-4 (8px to 16px)
+    const chartRight = 8 + (currentPosition * 8);
+    
+    // Calculate dynamic left shift to prevent overlap with charts
+    const chartTotalWidth = chartSize + chartRight; // Total space needed for chart
+    
+    // Calculate if form would overlap with chart
+    const formCenter = width / 2;
+    const formHalfWidth = formWidth / 2;
+    const formRightEdge = formCenter + formHalfWidth;
+    const chartLeftEdge = width - chartTotalWidth;
+    
+    // Calculate required left shift to prevent overlap
+    let formLeftShift = 0;
+    if (formRightEdge > chartLeftEdge) {
+      const overlap = formRightEdge - chartLeftEdge;
+      formLeftShift = Math.round(overlap + 20); // Add 20px buffer
+    }
+    
+    return {
+      formWidth: Math.round(formWidth),
+      chartSize: Math.round(chartSize),
+      chartRight: Math.round(chartRight),
+      formLeftShift: formLeftShift
+    };
+  };
+
+  const responsiveDimensions = getResponsiveDimensions();
 
   useEffect(() => {
     api
@@ -315,8 +384,22 @@ function App() {
       <Route
         path="/"
         element={
-          <div className="bg-custom-gold min-h-screen py-8">
-            <main className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+          <div 
+            className="min-h-screen py-8 bg-cover bg-center bg-no-repeat bg-fixed"
+            style={{ 
+              backgroundImage: "url('/bangkok-city.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center center",
+              backgroundAttachment: "fixed"
+            }}
+          >
+            <main className="mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8" style={{ 
+              maxWidth: screenSize === 'small' ? '95%' : 
+                       screenSize === 'medium' ? `${responsiveDimensions?.formWidth || 700}px` : '886px',
+              marginLeft: screenSize === 'medium' && responsiveDimensions?.formLeftShift ? 
+                         `calc(50% - ${responsiveDimensions.formWidth/2}px - ${responsiveDimensions.formLeftShift}px)` : 
+                         undefined
+            }}>
               <Header
                 onLogout={async () => {
                   try {
@@ -361,7 +444,7 @@ function App() {
                 isLocked={isFormLocked}
                />
               <EmissionsForm data={formData} handleChange={handleChange} isLocked={isFormLocked} />
-              <EmissionsSummary data={formData} />
+              <EmissionsSummary data={formData} responsiveDimensions={responsiveDimensions} />
               <ReductionPlan
                 netZeroYear={formData.netZeroYear}
                 annualReductionPercentage={formData.annualReductionPercentage}

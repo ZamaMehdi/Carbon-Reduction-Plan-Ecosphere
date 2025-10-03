@@ -26,7 +26,16 @@ const UserReportHistory = () => {
   if (!reports.length) return <p className="p-4">No submitted reports found.</p>;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div 
+      className="min-h-screen py-8 bg-cover bg-center bg-no-repeat bg-fixed"
+      style={{ 
+        backgroundImage: "url('/bangkok-city.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        backgroundAttachment: "fixed"
+      }}
+    >
+      <div className="p-6 max-w-4xl mx-auto">
       {/* ✅ Back to Home Button */}
       <div className="mb-4">
         <Link
@@ -56,6 +65,7 @@ const UserReportHistory = () => {
             </Link>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

@@ -46,7 +46,7 @@ function generateYearOnYearNarrative(allYearsData) {
   return narrative;
 }
 
-const EmissionsSummary = ({ data }) => {
+const EmissionsSummary = ({ data, responsiveDimensions }) => {
   const { scope1, scope2, scope3, totalEmissions, endYear, previousPeriods = [] } = data;
 
   // Combine previous periods and current year for the bar chart
@@ -82,7 +82,7 @@ const EmissionsSummary = ({ data }) => {
 
   return (
     <div className="section-card text-center">
-      <h2 className="section-title-gradient" style={{backgroundImage: 'linear-gradient(90deg, #2dd4bf 0%, #3b82f6 100%)'}}>6. Current 12-Month Emissions</h2>
+      <h2 className="section-title-gradient" style={{ backgroundColor: '#000000' }}>6. Current 12-Month Emissions</h2>
       <p className="text-4xl font-bold text-teal-600 mb-2">{totalEmissions.toFixed(2)}<span className="text-sm text-gray-600 ml-1 ">tCO₂e</span></p>
       <p className="text-s text-gray-600 mb-6">(Tonnes of Carbon Dioxide Equivalent)</p>
       
@@ -105,7 +105,12 @@ const EmissionsSummary = ({ data }) => {
       </div>
 
       <div className="print-hide mb-8 chart-container-card border-teal-100">
-        <ScopePieChart scope1={scope1} scope2={scope2} scope3={scope3} />
+        <ScopePieChart 
+          scope1={scope1} 
+          scope2={scope2} 
+          scope3={scope3} 
+          responsiveDimensions={responsiveDimensions}
+        />
       </div>
 
       <div className="print-hide mb-8 chart-container-card border-teal-100">
@@ -114,6 +119,7 @@ const EmissionsSummary = ({ data }) => {
           scope1Data={scope1Data}
           scope2Data={scope2Data}
           scope3Data={scope3Data}
+          responsiveDimensions={responsiveDimensions}
         />
       </div>
 

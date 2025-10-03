@@ -4,7 +4,7 @@ import { Chart } from 'chart.js/auto';
 const ReductionPlan = ({ netZeroYear, annualReductionPercentage, onChange, isLocked }) => {
   return (
     <div className="section-card">
-      <h2 className="section-title-gradient" style={{backgroundImage: 'linear-gradient(90deg, #f59e0b 0%, #ef4444 100%)'}}>7. Net Zero Commitment</h2>
+      <h2 className="section-title-gradient" style={{ backgroundColor: '#000000' }}>7. Net Zero Commitment</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print-hide">
         <div>
           <label className="form-label-styled">Net Zero Commitment Year (Max 2050):</label>
