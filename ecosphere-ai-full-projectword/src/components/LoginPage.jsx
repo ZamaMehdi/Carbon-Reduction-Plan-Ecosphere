@@ -25,6 +25,9 @@ const LoginPage = ({ onLoginSuccess, onNavigateToSignup }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    
     try {
       await api.post('/auth/login', { email, password });
 
@@ -56,6 +59,8 @@ const LoginPage = ({ onLoginSuccess, onNavigateToSignup }) => {
   
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred during login.');
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -181,7 +186,9 @@ const LoginPage = ({ onLoginSuccess, onNavigateToSignup }) => {
                 </div>
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
-              <button type="submit" className="btn-primary w-full">Login</button>
+              <button type="submit" className="btn-primary w-full" disabled={isLoading}>
+                {isLoading ? 'Logging in...' : 'Login'}
+              </button>
             </form>
             <div className="flex justify-between items-center mt-4">
               <button type="button" className="text-sm text-green-600 hover:underline" onClick={onNavigateToSignup}>Sign Up</button>

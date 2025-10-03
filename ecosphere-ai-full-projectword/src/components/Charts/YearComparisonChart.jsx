@@ -8,8 +8,8 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
   const chartRef = useRef(null);
   const sentinelRef = useRef(null);
   const [isSticky, setIsSticky] = useState(false);
-  const [isLarge, setIsLarge] = useState(false); // new state
   const [isDismissed, setIsDismissed] = useState(false);
+  const [isLarge, setIsLarge] = useState(false);
 
   const placeholderRef = useRef(null);
   const [placeholderHeight, setPlaceholderHeight] = useState(0);
@@ -104,6 +104,15 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
     }
   }, [years, scope1Data, scope2Data, scope3Data, hasValidData]);
 
+  // Resize chart when enlarge state changes
+  useEffect(() => {
+    if (chartRef.current) {
+      setTimeout(() => {
+        chartRef.current.resize();
+      }, 100); // Small delay to ensure container size has updated
+    }
+  }, [isLarge]);
+
   useEffect(() => {
     const observer = new window.IntersectionObserver(
       ([entry]) => {
@@ -139,10 +148,12 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
 
   const containerStyle = {
     width: isFloating ? (
+      isLarge ? '500px' : // Large size when enlarged
       responsiveDimensions ? responsiveDimensions.chartSize : 
       isMediumFloating ? 250 : 300
     ) : '100%',
     height: isFloating ? (
+      isLarge ? '300px' : // Large size when enlarged
       responsiveDimensions ? Math.round(responsiveDimensions.chartSize * 0.8) : 
       isMediumFloating ? 200 : 250
     ) : 300
@@ -189,7 +200,7 @@ const YearComparisonChart = forwardRef(({ years, scope1Data, scope2Data, scope3D
                 </button>
                       <button
                     onClick={() => setIsLarge(!isLarge)}
-                     className="absolute bottom-1 left-1 px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100"
+                     className="absolute bottom-1 left-1 px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-100 z-10"
                        >
                           {isLarge ? 'Shrink' : 'Enlarge'}
                          </button>
