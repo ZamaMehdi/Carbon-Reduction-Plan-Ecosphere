@@ -186,7 +186,7 @@
   }
   @page {
     size: A4;
-    margin: 0.5in;
+    margin: 0.2in 0.5in 0.5in 0.5in;
   }
   /* Remove page breaks to prevent blank first page */
   html, body {
@@ -227,6 +227,19 @@
     box-shadow: none !important;
     border-radius: 0 !important;
     background: white !important;
+  }
+  /* Reduce top spacing for report view in print */
+  .min-h-screen {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .flex.justify-center {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .w-\[794px\] {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
   }
   /* Fix form sections for print */
   .section-card {

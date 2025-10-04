@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import ScopePieChart from '../components/Charts/ScopePieChart';
 import YearComparisonChart from '../components/Charts/YearComparisonChart';
 import ReductionPlanResults from '../components/ReductionPlanResults'; // Adjust the path if needed
+import Declaration from '../components/Declaration';
 import { getReportingPeriod } from '../utils/getReportingPeriod';
 
 
@@ -178,6 +179,12 @@ const ReportDisplay = forwardRef(({ data }, ref) => {
      </p>
      <h2 className="text-[22px] font-semibold mt-4 mb-2">📆 Previous Reporting Periods</h2>
     
+     {/* Baseline Year info moved above the periods */}
+     {!data.isFirstPlan && data.previousPeriods?.length > 0 && (
+      <p className="text-[18px] text-gray-600 mb-4">
+        The earliest year entered is your <strong>Baseline Year: <span className="text-black">{derivedBaselineYear}</span></strong>
+      </p>
+     )}
 
      {!data.isFirstPlan && data.previousPeriods?.length > 0 && (
       <div className="space-y-4 mt-4">
@@ -196,9 +203,6 @@ const ReportDisplay = forwardRef(({ data }, ref) => {
             </div>
           );
         })}
-        <p className="text-[18x] text-gray-600">
-  The earliest year entered is your <strong>Baseline Year: <span className="text-black">{derivedBaselineYear}</span></strong>
- </p>
 
       </div>
     )}
@@ -394,6 +398,9 @@ const ReportDisplay = forwardRef(({ data }, ref) => {
 
 
    <p><strong>Submitted on:</strong> {data.createdAt ? new Date(data.createdAt).toLocaleString() : 'N/A'}</p>
+
+   {/* Declaration and Sign Off */}
+   <Declaration />
 
     </div>
     

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import ReportDisplay from '../components/ReportDisplay';
+import PrintButton from '../components/PrintButton';
 
 const ReportViewPage = ({ isAdminView = false }) => {
   const { id } = useParams();
@@ -99,7 +100,7 @@ const ReportViewPage = ({ isAdminView = false }) => {
 
   return (
     <div 
-      className="min-h-screen py-8 bg-cover bg-center bg-no-repeat bg-fixed"
+      className="min-h-screen py-2 bg-cover bg-center bg-no-repeat bg-fixed"
       style={{ 
         backgroundImage: "url('/bangkok-city.jpg')",
         backgroundSize: "cover",
@@ -107,20 +108,24 @@ const ReportViewPage = ({ isAdminView = false }) => {
         backgroundAttachment: "fixed"
       }}
     >
-      <div className="p-6">
-      <button
-        onClick={() => navigate(isAdminView ? '/admin' : '/my-reports')}
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        ← Back to {isAdminView ? 'Admin Dashboard' : 'My Reports'}
-      </button>
+      <div className="p-2">
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={() => navigate(isAdminView ? '/admin' : '/my-reports')}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          ← Back to {isAdminView ? 'Admin Dashboard' : 'My Reports'}
+        </button>
+        
+        <PrintButton />
+      </div>
 
-      <h1 className="text-2xl font-bold mb-4">
+      <h1 className="text-2xl font-bold mb-4 print-hide">
         {isAdminView ? 'Viewing Report (Admin)' : 'Submitted Report'}
       </h1>
 
-      <div className="flex justify-center py-8">
-        <div className="w-[794px] min-h-[1123px] p-8">
+      <div className="flex justify-center py-2">
+        <div className="w-[794px] min-h-[1123px] p-4">
           <ReportDisplay data={report} ref={pieChartRef}/>
           
           {/* Export Button - Admin Only */}

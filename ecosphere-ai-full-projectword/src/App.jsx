@@ -475,7 +475,7 @@ function App() {
          <TestCookie />
           </div> */}
 
-              {submissionStatus && <p className="mt-4 text-center text-lg print-hide">{submissionStatus.message}</p>}
+              {submissionStatus && <p className="mt-4 text-center text-lg">{submissionStatus.message}</p>}
               <div className="h-[400px] sm:h-[420px] bg-transparent" />
             </main>
           </div>
