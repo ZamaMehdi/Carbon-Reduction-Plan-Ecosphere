@@ -189,13 +189,17 @@ const ReportDisplay = forwardRef(({ data }, ref) => {
      {!data.isFirstPlan && data.previousPeriods?.length > 0 && (
       <div className="space-y-4 mt-4">
         {data.previousPeriods.map((period, index) => {
-          const endMonthName = period.endMonthNameRaw || 'N/A';
+          const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+          ];
+          const endMonthName = data.endMonth ? months[data.endMonth - 1] : 'N/A';
           console.log('🔍 previousPeriods:', data.previousPeriods);
 
          return (
             <div key={index} className="p-4 bg-gray-50 border rounded">
               <h3 className="font-semibold text-purple-700">
-                Year: {period.year} (ending {endMonthName} {period.year})
+                Year: {period.year} (12-month period ending {endMonthName} {period.year})
               </h3>
               <p><strong>Scope 1:</strong> {formatTCO2(period.scope1)}</p>
               <p><strong>Scope 2:</strong> {formatTCO2(period.scope2)}</p>
@@ -210,7 +214,7 @@ const ReportDisplay = forwardRef(({ data }, ref) => {
  )}
 
  <div>
-  <h2 className="text-[22px] font-semibold mb-4">📋 Current Emission Inputs</h2>
+  <h2 className="text-[22px] font-semibold mb-4">📋 Current Emission Data</h2>
   <table className="w-full table-auto border border-gray-300 text-[17px]">
     <thead className="bg-gray-100">
       <tr>
@@ -363,22 +367,28 @@ const ReportDisplay = forwardRef(({ data }, ref) => {
     <h2 className="text-xl font-bold mb-2">📊 Year-over-Year Comparison</h2>
     <YearComparisonChart
       ref={yearComparisonChartRef}
-      years={[
-        ...data.previousPeriods.map((p) => p.year),
-        data.endYear
-      ]}
-      scope1Data={[
-        ...data.previousPeriods.map((p) => p.scope1),
-        data.scope1
-      ]}
-      scope2Data={[
-        ...data.previousPeriods.map((p) => p.scope2),
-        data.scope2
-      ]}
-      scope3Data={[
-        ...data.previousPeriods.map((p) => p.scope3),
-        data.scope3
-      ]}
+      years={(() => {
+        const allYears = [...data.previousPeriods.map((p) => p.year), data.endYear];
+        return allYears.sort((a, b) => a - b);
+      })()}
+      scope1Data={(() => {
+        const allData = [...data.previousPeriods.map((p) => p.scope1), data.scope1];
+        const sortedYears = [...data.previousPeriods.map((p) => p.year), data.endYear].sort((a, b) => a - b);
+        const originalYears = [...data.previousPeriods.map((p) => p.year), data.endYear];
+        return sortedYears.map(year => allData[originalYears.indexOf(year)]);
+      })()}
+      scope2Data={(() => {
+        const allData = [...data.previousPeriods.map((p) => p.scope2), data.scope2];
+        const sortedYears = [...data.previousPeriods.map((p) => p.year), data.endYear].sort((a, b) => a - b);
+        const originalYears = [...data.previousPeriods.map((p) => p.year), data.endYear];
+        return sortedYears.map(year => allData[originalYears.indexOf(year)]);
+      })()}
+      scope3Data={(() => {
+        const allData = [...data.previousPeriods.map((p) => p.scope3), data.scope3];
+        const sortedYears = [...data.previousPeriods.map((p) => p.year), data.endYear].sort((a, b) => a - b);
+        const originalYears = [...data.previousPeriods.map((p) => p.year), data.endYear];
+        return sortedYears.map(year => allData[originalYears.indexOf(year)]);
+      })()}
       isStatic={true}
     />
   </div>

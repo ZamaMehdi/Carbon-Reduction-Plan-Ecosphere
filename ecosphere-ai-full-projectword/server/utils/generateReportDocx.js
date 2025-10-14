@@ -78,7 +78,7 @@ async function generateReportDocx(data, scopePieChart) {
             paragraph(`Year: ${p.year} – Scope 1: ${p.scope1} | Scope 2: ${p.scope2} | Scope 3: ${p.scope3}`)
           )),
 
-          heading('📋 Current Emission Inputs'),
+          heading('📋 Current Emission Data'),
           paragraph('Scope 1 – Fleet:'),
           paragraph(`  - Average Car: ${data.fleetAveCarKm || 0} km`),
           paragraph(`  - Delivery Vans: ${data.fleetDeliveryVansKm || 0} km`),
@@ -234,7 +234,7 @@ async function generateCompleteReportDocx(data, chartImages = {}) {
           paragraph('2. Organisation Details'),
           paragraph('3. Reporting Period Summary'),
           paragraph('4. Previous Reporting Periods'),
-          paragraph('5. Current Emission Inputs'),
+          paragraph('5. Current Emission Data'),
           paragraph('6. Current Emissions Summary'),
           paragraph('7. Emissions Breakdown Charts'),
           paragraph('8. Year-on-Year Comparison'),
@@ -273,18 +273,25 @@ async function generateCompleteReportDocx(data, chartImages = {}) {
           heading('📆 Previous Reporting Periods'),
           ...(data.previousPeriods && data.previousPeriods.length > 0 ? [
             paragraph(`Is this your first Carbon Reduction Plan: ${data.isFirstPlan ? 'Yes' : 'No'}`),
-            ...data.previousPeriods.map((period, index) => [
-              paragraph(`Year: ${period.year} (ending ${period.endMonthNameRaw || 'N/A'} ${period.year})`),
-              paragraph(`Scope 1: ${Number(period.scope1 || 0).toFixed(2)} tCO₂e`),
-              paragraph(`Scope 2: ${Number(period.scope2 || 0).toFixed(2)} tCO₂e`),
-              paragraph(`Scope 3: ${Number(period.scope3 || 0).toFixed(2)} tCO₂e`),
-            ]).flat(),
+            ...data.previousPeriods.map((period, index) => {
+              const months = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+              ];
+              const endMonthName = data.endMonth ? months[data.endMonth - 1] : 'N/A';
+              return [
+                paragraph(`Year: ${period.year} (12-month period ending ${endMonthName} ${period.year})`),
+                paragraph(`Scope 1: ${Number(period.scope1 || 0).toFixed(2)} tCO₂e`),
+                paragraph(`Scope 2: ${Number(period.scope2 || 0).toFixed(2)} tCO₂e`),
+                paragraph(`Scope 3: ${Number(period.scope3 || 0).toFixed(2)} tCO₂e`),
+              ];
+            }).flat(),
           ] : [
             paragraph('No previous reporting periods available.')
           ]),
 
-          // Current Emission Inputs Table
-          heading('📋 Current Emission Inputs'),
+          // Current Emission data Table
+          heading('📋 Current Emission Data'),
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [

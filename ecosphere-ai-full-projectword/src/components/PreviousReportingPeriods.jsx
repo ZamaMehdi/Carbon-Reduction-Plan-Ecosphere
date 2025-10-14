@@ -104,7 +104,7 @@ const PreviousReportingPeriod = ({ data, handleChange, previousPeriods, handlePr
               return (
                 <div key={period.year} className="narrative-card bg-gray-200 border-gray-400">
                   <h3 className="font-bold text-purple-900 mb-3 text-lg">
-                    Data for {period.year} (ending {endMonthName} {period.year})
+                    Data for {period.year} (12-month period ending {endMonthName} {period.year})
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
